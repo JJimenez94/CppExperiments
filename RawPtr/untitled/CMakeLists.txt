@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(TestRawPtr)
-add_executable(${PROJECT_NAME} "main.cpp")
+
+set(SRC "main.cpp"
+        Clase1.cpp
+        Clase1.h)
+
+add_executable(${PROJECT_NAME} ${SRC})
