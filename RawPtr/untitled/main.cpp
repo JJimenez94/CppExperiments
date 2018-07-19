@@ -1,137 +1,75 @@
-#include "Clase1.h"
-#include <iostream>
-#include <memory>
+#include "Car.h"
+#include <map>
 
 using namespace std;
 
-/*
- * RAII
-*/
-class Car
+
+unique_ptr<Car> CreateCar(const CarType type)
 {
-protected:
-    int _speed{};
+    unique_ptr<Car> result{};
+    switch(type)
+    {
+        case CarType::BrokenCar_t:
+            result.reset(new BrokenCar());
+        break;
+        case CarType::RenaultClio_t:
+            result.reset(new RenaultClio());
+        break;
+        default:
+
+        break;
+    }
+    return result;
+}
+
+class CarStock final
+{
+private:
+    std::uint8_t _index{};
+    std::map<std::uint8_t, std::unique_ptr<Car>> _container{};
 public:
-    Car() = default;
-    virtual ~Car()
+    CarStock()
     {
-        cout << __FUNCTION__ << endl;
-    }
 
-    virtual void Start() = 0;
-};
-class FordFiesta final : public Car
-{
-public:
-    FordFiesta() = default;
-    ~FordFiesta()
-    {
-        cout << __FUNCTION__ << endl;
     }
-    void Start()
+    uint8_t Push(std::unique_ptr<Car> car)
     {
-        _speed = 10;
-        throw logic_error("Flat tired");
+        _container[_index] = move(car);
+        return _index++;
     }
-};
-class RenaultClio : public Car
-{
-public:
-    RenaultClio() = default;
-    ~RenaultClio()
+    std::unique_ptr<Car> Get(const int pos)
     {
-        cout << __FUNCTION__ << endl;
-    }
-    void Start()
-    {
-        _speed = 30;
-    }
-};
-void Inc(const int& ref,int * b)
-{
-    if(b != nullptr)
-    {
-        // LOG ERROR
-        // throw
-        //return error_code;
-    }
-
-    //ref++;
-}
-void ptr1()
-{
-    uint8_t buffer[512]; // new/c++98, malloc/c, make_shared/c++11 make_unique/c++14
-    uint8_t* pbuffer = buffer;
-
-    for(int i = 0; i < 512; ++i)
-    {
-        printf(" %2X ", pbuffer[i]);
-    }
-}
-
-void fnc()
-{
-
-    //!!!
-    //!
-    //!
-
-    throw logic_error("puff");
-
-    //!
-    //!
-}
-void func(const Car* car)
-{
-
-}
-void ptr2()
-{
-    unique_ptr<Car> car2{};
-    unique_ptr<Car> car1{};
-    RenaultClio car3;
-    car1.reset(new FordFiesta());
-    car2 = make_unique<RenaultClio>();
-    func(car1->get());
-    car1->Start(); // puff
-    car2->Start();
-}
-void ptr3()
-{
-    Car* car2{nullptr};
-    Car* car1{nullptr};
-    try
-    {
-        car1 = new FordFiesta();
-        car1->Start(); // puff
-        car2 = new RenaultClio();
-        car2->Start();
-        RenaultClio car3;
-    }
-    catch(std::exception& ex)
-    {
-        if(car1 != nullptr)
+        std::unique_ptr<Car> result{};
+        if(_container.find(pos) != _container.end())
         {
-            delete car1;
+            result = move(_container.at(pos));
         }
-
-        if(car2 != nullptr)
-        {
-            delete car2;
-        }
-        cout << " ERROR " << ex.what() << endl;
+        return result;
     }
-}
+    bool Remove(const int pos)
+    {
+        if(_container.find(pos) != _container.end())
+        {
+            _container.erase(pos);
+        }
+    }
+    ~CarStock() = default;
+
+};
+
 int main()
 {
-    try
+    std::unique_ptr<Car> clio1 = CreateCar(CarType::RenaultClio_t);
+    std::unique_ptr<Car> clio2 = CreateCar(CarType::RenaultClio_t);
     {
-        ptr2();
+        CarStock stock;
+
+        stock.Push(move(clio1));
+        stock.Push(move(clio2));
+        auto lastPos = stock.Push(CreateCar(CarType::RenaultClio_t));
+        std::unique_ptr<Car> lastCar = stock.Get(lastPos);
+        lastCar->Start();
     }
-    catch(std::exception& ex)
-    {
-        cout << " ERROR " << ex.what() << endl;
-    }
-    RunClase1();
+
     return 0;
 }
