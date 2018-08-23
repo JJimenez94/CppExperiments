@@ -68,6 +68,10 @@ int main()
         stock.Push(move(clio2));
         auto lastPos = stock.Push(CreateCar(CarType::RenaultClio_t));
         std::unique_ptr<Car> lastCar = stock.Get(lastPos);
+        RenaultClio* c  = new RenaultClio[100];
+        c->Start();
+        c[1].Start();
+        delete[] c;
         lastCar->Start();
     }
 
