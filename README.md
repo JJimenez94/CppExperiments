@@ -1,7 +1,6 @@
 ### about the repository
 In this repository I'm gonna upload and comment my own code projects with C++ learning purpouses.
 
-#### Juan Sebastián Jiménez Valero
   1. Characters: Basic approach to C++ char. **Coded in C++, IDE: Visual Studio Community 2017**.
   2. Strings: Basic approach to C++ strings. **Coded in C++, IDE: Visual Studio Community 2017**.
   3. Structs: Basic approach to C++ structs. **Coded in C++, IDE: Visual Studio Community 2017**.
